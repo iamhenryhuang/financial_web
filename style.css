@@ -1,0 +1,166 @@
+/* 財經網站高質感 CSS 設計 */
+
+/* 全域樣式 */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 標題樣式 */
+h1 {
+    text-align: center;
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+/* 表單樣式 */
+form {
+    margin-top: 25px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #444;
+}
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    padding: 14px;
+    font-size: 16px;
+    background-color: #f9fafb;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 6px;
+    border: none;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* 股票資訊頁面 */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: white;
+    font-weight: 700;
+    text-align: center;
+    padding: 18px;
+    font-size: 20px;
+}
+
+.card-body {
+    padding: 22px;
+}
+
+.table {
+    width: 100%;
+    margin-top: 12px;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 14px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f1f5f9;
+    font-weight: 700;
+    color: #374151;
+}
+
+.table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* 返回首頁按鈕 */
+.btn-primary {
+    display: block;
+    text-align: center;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    border: none;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 6px;
+    margin-top: 22px;
+    transition: all 0.3s;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* 錯誤提示樣式 */
+.alert-danger {
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+/* 圖表容器樣式 */
+.mt-4 {
+    margin-top: 25px;
+}
+
+/* 股價圖表樣式 */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 圖表標題樣式 */
+h3 {
+    color: #1e293b;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
