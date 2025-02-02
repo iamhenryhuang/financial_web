@@ -1,4 +1,6 @@
 import os
+import matplotlib
+matplotlib.use('Agg')  # 設定 Matplotlib 使用非 GUI 模式
 import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, url_for
 import yfinance as yf
@@ -10,7 +12,7 @@ def get_stock_info(symbol):
     try:
         stock = yf.Ticker(symbol)
         info = stock.info
-        
+
         # 獲取基本資訊
         stock_data = {
             'symbol': symbol,
@@ -22,7 +24,7 @@ def get_stock_info(symbol):
             'market_cap': info.get('marketCap', 'N/A'),
             'pe_ratio': info.get('trailingPE', 'N/A')
         }
-        
+
         # 獲取歷史價格數據
         end_date = datetime.now()
         start_date = end_date - timedelta(days=30)
@@ -42,10 +44,10 @@ def get_stock_info(symbol):
 def generate_stock_chart(hist, symbol):
     """繪製近 30 天股價圖，儲存到 static 資料夾"""
     plt.figure(figsize=(10, 5))
-    plt.plot(hist.index, hist["Close"], label="收盤價", color="blue", linewidth=2)
-    plt.xlabel("日期")
-    plt.ylabel("股價 (USD)")
-    plt.title(f"{symbol} 近30天股價走勢")
+    plt.plot(hist.index, hist["Close"], label="Closing Price", color="blue", linewidth=2)
+    plt.xlabel("Date")
+    plt.ylabel("Stock Price")
+    plt.title(f"{symbol} trend over the past 30 days.")
     plt.legend()
     plt.grid(True)
 
@@ -56,7 +58,7 @@ def generate_stock_chart(hist, symbol):
     # 儲存圖片
     img_path = f"static/{symbol}.png"
     plt.savefig(img_path)
-    plt.close()
+    plt.close()  # 避免記憶體洩漏
 
     return url_for('static', filename=f"{symbol}.png")
 
