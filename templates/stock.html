@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>股票資訊</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="container">
+        <h1>股票資訊</h1>
+        
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if stock %}
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ stock.name }} ({{ stock.symbol }})</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr><th>現價</th><td>{{ stock.current_price }}</td></tr>
+                    <tr><th>昨收</th><td>{{ stock.previous_close }}</td></tr>
+                    <tr><th>開盤價</th><td>{{ stock.open }}</td></tr>
+                    <tr><th>成交量</th><td>{{ stock.volume }}</td></tr>
+                    <tr><th>市值</th><td>{{ stock.market_cap }}</td></tr>
+                    <tr><th>本益比</th><td>{{ stock.pe_ratio }}</td></tr>
+                </table>
+
+                {% if stock.chart_url %}
+                <div class="mt-4">
+                    <h3>近 30 天股價走勢</h3>
+                    <img src="{{ stock.chart_url }}" alt="股價圖" class="img-fluid">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <a href="/" class="btn-primary">返回首頁</a>
+    </div>
+</body>
+</html>
