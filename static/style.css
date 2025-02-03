@@ -1,164 +1,299 @@
 /* 全域樣式 */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #f5f7fa;
     margin: 0;
     padding: 0;
-    color: #333;
+    color: #1e293b;
+    line-height: 1.5;
 }
 
 .container {
-    max-width: 800px;
-    margin: 60px auto;
-    padding: 30px;
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
 }
 
-/* 標題樣式 */
-h1 {
-    text-align: center;
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
     color: #1e293b;
-    font-weight: 700;
-    margin-bottom: 25px;
 }
 
-/* 表單樣式 */
-form {
-    margin-top: 25px;
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* 熱門股票區塊 */
+.popular-stocks {
+    margin-bottom: 3rem;
+}
+
+.stock-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stock-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+
+.stock-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.stock-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.stock-symbol {
+    color: #64748b;
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+}
+
+.stock-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    color: #1e293b;
+}
+
+.stock-change {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.stock-change.positive {
+    color: #16a34a;
+}
+
+.stock-change.negative {
+    color: #dc2626;
+}
+
+/* 搜尋區塊 */
+.search-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #444;
+    color: #1e293b;
 }
 
 .form-control {
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
-    padding: 14px;
-    font-size: 16px;
-    background-color: #f9fafb;
-    transition: all 0.3s;
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
 }
 
 .form-control:focus {
+    outline: none;
     border-color: #2563eb;
-    box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-button {
-    width: 100%;
-    padding: 14px;
-    font-size: 18px;
-    font-weight: 700;
-    border-radius: 6px;
-    border: none;
-    background: linear-gradient(135deg, #1e40af, #2563eb);
+.search-button {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: white;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-button:hover {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-}
-
-/* 股票資訊頁面 */
-.card {
     border: none;
     border-radius: 8px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card-header {
-    background: linear-gradient(135deg, #1e40af, #2563eb);
-    color: white;
+.search-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+}
+
+/* 股票詳細資訊頁面 */
+.stock-detail {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.stock-header {
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.current-price {
+    margin-top: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+}
+
+.current-price .price {
+    font-size: 2.5rem;
     font-weight: 700;
-    text-align: center;
-    padding: 18px;
-    font-size: 20px;
 }
 
-.card-body {
-    padding: 22px;
+.current-price .change {
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
 }
 
-.table {
+.change.positive {
+    background-color: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
+}
+
+.change.negative {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+}
+
+/* 資訊卡片區域 */
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.info-table {
     width: 100%;
-    margin-top: 12px;
     border-collapse: collapse;
 }
 
-.table th, .table td {
-    padding: 14px;
+.info-table th,
+.info-table td {
+    padding: 0.75rem;
     border-bottom: 1px solid #e2e8f0;
     text-align: left;
 }
 
-.table th {
-    background-color: #f1f5f9;
-    font-weight: 700;
-    color: #374151;
+.info-table th {
+    color: #64748b;
+    font-weight: 600;
+    width: 40%;
 }
 
-.table tr:hover {
-    background-color: #f8fafc;
+.info-table td {
+    font-weight: 500;
 }
 
-/* 返回首頁按鈕 */
+/* 圖表區域 */
+.chart-section {
+    margin-top: 2rem;
+}
+
+.chart-section .card {
+    margin-bottom: 1.5rem;
+}
+
+.chart-img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* 錯誤提示 */
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+/* 返回按鈕 */
 .btn-primary {
-    display: block;
-    text-align: center;
-    background: linear-gradient(135deg, #1e40af, #2563eb);
-    border: none;
-    padding: 14px;
-    font-size: 18px;
-    font-weight: 700;
-    border-radius: 6px;
-    margin-top: 22px;
-    transition: all 0.3s;
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: white;
     text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* 錯誤提示樣式 */
-.alert-danger {
-    background-color: #fee2e2;
-    border: 1px solid #fca5a5;
-    color: #dc2626;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 20px;
+/* 市場資訊區塊 */
+.market-info {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* 圖表容器樣式 */
-.mt-4 {
-    margin-top: 25px;
+.info-content {
+    color: #475569;
+    line-height: 1.8;
 }
 
-/* 股價圖表樣式 */
-.img-fluid {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* 圖表標題樣式 */
-h3 {
-    color: #1e293b;
-    font-weight: 600;
-    margin-bottom: 15px;
-    font-size: 18px;
+.info-content p {
+    margin: 0.5rem 0;
 }
