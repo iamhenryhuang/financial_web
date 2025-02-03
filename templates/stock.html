@@ -16,30 +16,76 @@
         {% endif %}
         
         {% if stock %}
-        <div class="card">
-            <div class="card-header">
+        <div class="stock-detail">
+            <!-- 股票標題資訊 -->
+            <div class="stock-header">
                 <h2>{{ stock.name }} ({{ stock.symbol }})</h2>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <tr><th>現價</th><td>{{ stock.current_price }}</td></tr>
-                    <tr><th>昨收</th><td>{{ stock.previous_close }}</td></tr>
-                    <tr><th>開盤價</th><td>{{ stock.open }}</td></tr>
-                    <tr><th>成交量</th><td>{{ stock.volume }}</td></tr>
-                    <tr><th>市值</th><td>{{ stock.market_cap }}</td></tr>
-                    <tr><th>本益比</th><td>{{ stock.pe_ratio }}</td></tr>
-                </table>
-
-                {% if stock.chart_url %}
-                <div class="mt-4">
-                    <h3>近 30 天股價走勢</h3>
-                    <img src="{{ stock.chart_url }}" alt="股價圖" class="img-fluid">
+                <div class="current-price">
+                    <span class="price">{{ stock.current_price }}</span>
+                    {% if stock.price_change != 'N/A' %}
+                    <span class="change {% if stock.price_change > 0 %}positive{% elif stock.price_change < 0 %}negative{% endif %}">
+                        {{ "%.2f"|format(stock.price_change) }}%
+                    </span>
+                    {% endif %}
                 </div>
-                {% endif %}
+            </div>
+
+            <!-- 基本資訊卡片 -->
+            <div class="info-cards">
+                <div class="card">
+                    <h3>今日交易資訊</h3>
+                    <table class="info-table">
+                        <tr><th>開盤價</th><td>{{ stock.open }}</td></tr>
+                        <tr><th>最高價</th><td>{{ stock.high_today }}</td></tr>
+                        <tr><th>最低價</th><td>{{ stock.low_today }}</td></tr>
+                        <tr><th>昨收價</th><td>{{ stock.previous_close }}</td></tr>
+                        <tr><th>成交量</th><td>{{ stock.volume }}</td></tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>技術指標</h3>
+                    <table class="info-table">
+                        <tr><th>5日均線</th><td>{{ "%.2f"|format(stock.ma5) if stock.ma5 else 'N/A' }}</td></tr>
+                        <tr><th>20日均線</th><td>{{ "%.2f"|format(stock.ma20) if stock.ma20 else 'N/A' }}</td></tr>
+                        <tr><th>60日均線</th><td>{{ "%.2f"|format(stock.ma60) if stock.ma60 else 'N/A' }}</td></tr>
+                        <tr><th>52週最高</th><td>{{ stock.fifty_two_week_high }}</td></tr>
+                        <tr><th>52週最低</th><td>{{ stock.fifty_two_week_low }}</td></tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>基本面資訊</h3>
+                    <table class="info-table">
+                        <tr><th>本益比</th><td>{{ stock.pe_ratio }}</td></tr>
+                        <tr><th>每股盈餘</th><td>{{ stock.eps }}</td></tr>
+                        <tr><th>殖利率</th><td>{% if stock.dividend_yield != 'N/A' and stock.dividend_yield %}{{ "%.2f"|format(stock.dividend_yield * 100) }}%{% else %}N/A{% endif %}</td></tr>
+                        <tr><th>市值</th><td>{{ stock.market_cap }}</td></tr>
+                        <tr><th>平均成交量</th><td>{{ stock.avg_volume }}</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 圖表區域 -->
+            <div class="chart-section">
+                <div class="card">
+                    <h3>股價走勢</h3>
+                    {% if stock.price_chart_url %}
+                    <img src="{{ stock.price_chart_url }}" alt="股價走勢圖" class="chart-img">
+                    {% endif %}
+                </div>
+
+                <div class="card">
+                    <h3>成交量分析</h3>
+                    {% if stock.volume_chart_url %}
+                    <img src="{{ stock.volume_chart_url }}" alt="成交量圖" class="chart-img">
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% endif %}
         
+        <!-- 返回首頁按鈕 -->
         <a href="/" class="btn-primary">返回首頁</a>
     </div>
 </body>
