@@ -1,146 +1,329 @@
 /* 全域樣式 */
+:root {
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --success-color: #16a34a;
+    --danger-color: #dc2626;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --bg-light: #f5f7fa;
+    --bg-white: #ffffff;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #f5f7fa;
+    background-color: var(--bg-light);
     margin: 0;
     padding: 0;
-    color: #1e293b;
+    color: var(--text-primary);
     line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
     max-width: 1200px;
-    margin: 30px auto;
+    margin: 0 auto;
     padding: 20px;
+    flex: 1;
 }
 
-h1, h2, h3 {
+/* 網站標題區域 */
+.site-header {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    height: auto;
+    padding: 20px 0;
+    text-align: center;
+    background: linear-gradient(90deg, #003366, #004488);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    position: relative;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    left: 0;
+    right: 0;
+    overflow: hidden;
+}
+
+/* 讓 header 內部內容置中 */
+.site-header h1 {
     margin: 0;
     padding: 0;
-    color: #1e293b;
-}
-
-h1 {
     font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 2rem;
 }
 
-h2 {
-    font-size: 1.8rem;
+/* 設置副標題 */
+.site-description {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* 市場概況區塊 */
+.market-overview {
+    margin-bottom: 3rem;
+}
+
+.market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1.5rem;
 }
 
-h3 {
-    font-size: 1.2rem;
+.market-time {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.market-card {
+    background: var(--bg-white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.market-card:hover {
+    transform: translateY(-4px);
+}
+
+.market-card i {
+    font-size: 2rem;
+    color: var(--primary-color);
     margin-bottom: 1rem;
 }
+
+.market-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+}
+
+.market-change {
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.market-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    font-weight: 600;
+}
+
+.market-stats .up { color: var(--success-color); }
+.market-stats .down { color: var(--danger-color); }
+.market-stats .same { color: var(--text-secondary); }
 
 /* 熱門股票區塊 */
 .popular-stocks {
     margin-bottom: 3rem;
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+/* 視圖切換按鈕 */
+.view-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-toggle {
+    background: none;
+    border: 1px solid var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-toggle:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.view-toggle.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 股票列表不同視圖模式 */
+/* 修改熱門股票區塊的樣式 */
 .stock-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    transition: all 0.3s ease;
 }
 
 .stock-card {
-    background: white;
+    background: var(--bg-white);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
     text-decoration: none;
     color: inherit;
+    display: flex;
+    flex-direction: column;
 }
 
 .stock-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.stock-info h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #1e293b;
+.stock-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stock-header {
+    display: flex;
+    flex-direction: column;
+}
+
+.stock-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
 }
 
 .stock-symbol {
-    color: #64748b;
-    margin: 0.3rem 0;
+    color: var(--text-secondary);
     font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.stock-price-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0;
 }
 
 .stock-price {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin: 0.5rem 0;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .stock-change {
     font-size: 1rem;
     font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
 }
 
 .stock-change.positive {
-    color: #16a34a;
+    background-color: rgba(22, 163, 74, 0.1);
+    color: var(--success-color);
 }
 
 .stock-change.negative {
-    color: #dc2626;
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--danger-color);
+}
+
+.stock-indicators {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bg-light);
+}
+
+.indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.indicator i {
+    color: var(--primary-color);
 }
 
 /* 搜尋區塊 */
 .search-section {
-    background: white;
+    background: var(--bg-white);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     margin-bottom: 3rem;
 }
 
+.search-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 .search-input-group {
     display: flex;
     gap: 1rem;
-    margin-bottom: 0.5rem;
+    position: relative;
 }
 
-.form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #1e293b;
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
 }
 
 .form-control {
     flex: 1;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     font-size: 1rem;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #2563eb;
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .search-button {
     padding: 0.75rem 2rem;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .search-button:hover {
@@ -148,152 +331,117 @@ h3 {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.form-text {
-    font-size: 0.875rem;
-    color: #64748b;
-    margin-top: 0.5rem;
-}
-
-/* 股票詳細資訊頁面 */
-.stock-detail {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-}
-
-.stock-header {
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.current-price {
-    margin-top: 1rem;
+.search-help {
+    margin-top: 0.75rem;
+    color: var(--text-secondary);
     display: flex;
-    align-items: baseline;
-    gap: 1rem;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.current-price .price {
-    font-size: 2.5rem;
-    font-weight: 700;
+/* 市場動態區塊 */
+.market-insights {
+    margin-bottom: 3rem;
 }
 
-.current-price .change {
-    font-size: 1.2rem;
-    font-weight: 600;
-    padding: 0.3rem 0.8rem;
-    border-radius: 6px;
-}
-
-.change.positive {
-    background-color: rgba(22, 163, 74, 0.1);
-    color: #16a34a;
-}
-
-.change.negative {
-    background-color: rgba(220, 38, 38, 0.1);
-    color: #dc2626;
-}
-
-/* 資訊卡片區域 */
-.info-cards {
+.insights-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 2rem;
 }
 
-.card {
-    background: #ffffff;
-    border-radius: 8px;
+.insight-card {
+    background: var(--bg-white);
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.info-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.info-table th,
-.info-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid #e2e8f0;
-    text-align: left;
-}
-
-.info-table th {
-    color: #64748b;
-    font-weight: 600;
-    width: 40%;
-}
-
-.info-table td {
-    font-weight: 500;
-}
-
-/* 圖表區域 */
-.chart-section {
-    margin-top: 2rem;
-}
-
-.chart-section .card {
-    margin-bottom: 1.5rem;
-}
-
-.chart-img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-top: 1rem;
-}
-
-/* 錯誤提示 */
-.alert {
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-}
-
-.alert-danger {
-    background-color: #fee2e2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
-}
-
-/* 返回按鈕 */
-.btn-primary {
-    display: inline-block;
-    padding: 0.75rem 2rem;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-/* 市場資訊區塊 */
-.market-info {
-    background: white;
-    padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s;
 }
 
-.info-content {
-    color: #475569;
-    line-height: 1.8;
+.insight-card:hover {
+    transform: translateY(-4px);
 }
 
-.info-content p {
-    margin: 0.5rem 0;
+.insight-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.insight-content h3 {
+    margin: 0 0 0.5rem 0;
+}
+
+.insight-content p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+/* 頁腳 */
+.site-footer {
+    background: var(--bg-white);
+    padding: 2rem 0;
+    margin-top: 3rem;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .market-grid,
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-input-group {
+        flex-direction: column;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .stock-grid.list-view .stock-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
