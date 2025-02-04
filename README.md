@@ -1,5 +1,3 @@
-這是你的 `README.md` 文件的原始碼，適用於你的 Flask 股票分析應用程式：
-
 ```markdown
 # 智慧股市分析平台 📈
 
@@ -46,7 +44,6 @@ http://127.0.0.1:5000/
 │   ├── stock.html         # 個股資訊頁
 ├── static/
 │   ├── style.css          # 樣式表
-│   ├── main.js            # 前端互動
 ├── README.md              # 本文件
 ```
 
@@ -69,8 +66,6 @@ http://127.0.0.1:5000/
 - 增加用戶自訂股票關注列表
 
 ## 作者
-💡 **智慧股市分析團隊**  
-📧 聯絡方式：support@stockanalysis.com
+💡 **Henry Huang**  
+📧 聯絡方式：henry.curry1008@gmail.com
 ```
-
-這個 `README.md` 文件涵蓋了你的專案說明、安裝步驟、API 文件，以及未來的開發方向。你可以根據需求進一步修改！ 🚀
