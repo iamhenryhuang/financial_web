@@ -527,8 +527,15 @@ body {
 /* 圖表區域優化 */
 .chart-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 1024px) {
+    .chart-section {
+        grid-template-columns: 1fr;
+    }
 }
 
 .chart-card {
