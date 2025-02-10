@@ -39,13 +39,14 @@ body {
     text-align: center;
     background: linear-gradient(90deg, #003366, #004488);
     color: white;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
     position: relative;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     left: 0;
     right: 0;
     overflow: hidden;
+    top: 0;
 }
 
 /* 讓 header 內部內容置中 */
@@ -139,40 +140,7 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* 視圖切換按鈕 */
-.view-options {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.view-toggle {
-    background: none;
-    border: 1px solid var(--text-secondary);
-    padding: 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: all 0.2s;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.view-toggle:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.view-toggle.active {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
 /* 股票列表不同視圖模式 */
-/* 修改熱門股票區塊的樣式 */
 .stock-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
