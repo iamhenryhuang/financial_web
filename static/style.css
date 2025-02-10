@@ -413,3 +413,201 @@ body {
         align-items: flex-start;
     }
 }
+
+/* stock.html的排版 */
+/* 增強數字展示的樣式 */
+.info-table td {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.info-table td:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.info-table th {
+    padding: 12px 8px;
+    color: #64748b;
+    font-weight: 500;
+    text-align: left;
+}
+
+/* 增強卡片樣式 */
+.info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    margin-bottom: 24px;
+}
+
+.info-card:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.card-header i {
+    font-size: 1.5rem;
+    color: #2563eb;
+    margin-right: 12px;
+}
+
+.card-header h3 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* 股票標題區域樣式優化 */
+.stock-header-info {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.stock-title {
+    margin-bottom: 16px;
+}
+
+.current-price .price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    background: #f8fafc;
+    padding: 8px 20px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-right: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.price-change {
+    font-size: 1.25rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.price-change.positive {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.price-change.negative {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* 增加資訊卡片網格布局 */
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* 圖表區域優化 */
+.chart-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.chart-card:hover {
+    transform: scale(1.02);
+}
+
+.chart-container {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.chart-card:hover .chart-container {
+    transform: scale(1.05);
+}
+
+.chart-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+/* 更新時間樣式 */
+.price-update {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 12px;
+}
+
+.price-update i {
+    margin-right: 6px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    .info-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .current-price .price {
+        font-size: 2rem;
+    }
+}
