@@ -206,13 +206,6 @@ def home():
     # 獲取市場概況
     market_info = get_market_info()
     
-    # 模擬漲跌家數統計
-    up_down_stats = {
-        'up': np.random.randint(300, 500),
-        'down': np.random.randint(200, 400),
-        'same': np.random.randint(50, 150)
-    }
-    
     # 獲取熱門股票資訊
     popular_stocks = ['2330.TW', '2317.TW', '2454.TW', '3706.TW', '2308.TW']
     stocks_info = []
@@ -245,7 +238,6 @@ def home():
                          market_index=market_info['market_index'],
                          market_change=market_info['market_change'],
                          market_volume=market_info['market_volume'],
-                         up_down_stats=up_down_stats,
                          popular_stocks=stocks_info)
 
 @app.route('/stock', methods=['GET'])
