@@ -1,192 +1,365 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-    <title>智慧股市分析平台 - 個股資訊</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <meta charset="UTF-8">
-</head>
-<body>
-    <header class="site-header">
-        <h1><i class="fas fa-chart-line"></i> 智慧股市分析平台</h1>
-        <p class="site-description">專業的股票分析與即時市場資訊</p>
-    </header>
-
-    <div class="container">
-        {% if error %}
-        <div class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-circle"></i>
-            {{ error }}
-        </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if stock_info and stock_info.get('股票名稱') %}
+            {{ stock_code }} {{ stock_info['股票名稱'] }} - 台股財經網站
+        {% else %}
+            股票查詢 - 台股財經網站
         {% endif %}
+    </title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- 自定義樣式 -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">
+                <i class="bi bi-graph-up-arrow me-2"></i>台股財經
+            </a>
+            <div class="d-flex">
+                <a href="{{ url_for('home') }}" class="btn btn-outline-light btn-sm me-3">
+                    <i class="bi bi-house me-1"></i>返回首頁
+                </a>
+                <span class="navbar-text text-light">
+                    <i class="bi bi-clock me-1"></i>
+                    {% if current_time %}{{ current_time.strftime('%Y-%m-%d %H:%M:%S') }}{% endif %}
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
         
-        {% if stock %}
-        <div class="stock-detail">
-            <!-- 股票標題資訊 -->
-            <div class="stock-header-info">
-                <div class="stock-title">
-                    <h2>{{ stock.name }}</h2>
-                    <span class="stock-symbol">{{ stock.symbol }}</span>
+        <!-- 搜尋區域 -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form action="{{ url_for('stock_page') }}" method="GET" class="d-flex gap-3">
+                            <div class="flex-grow-1">
+                                <input type="text" 
+                                       name="code" 
+                                       class="form-control" 
+                                       placeholder="請輸入股票代碼 (例如: 2330, 0050)" 
+                                       value="{{ stock_code if stock_code else '' }}"
+                                       required
+                                       pattern="[0-9A-Za-z]{4,6}"
+                                                                                title="請輸入4-6位數字或字母的股票代碼">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i>查詢
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="price-info">
-                    <div class="current-price">
-                        <span class="price">{{ stock.current_price }}</span>
-                        {% if stock.price_change != 'N/A' %}
-                        <span class="change {% if stock.price_change > 0 %}positive{% elif stock.price_change < 0 %}negative{% endif %}">
-                            <i class="fas fa-caret-{% if stock.price_change > 0 %}up{% elif stock.price_change < 0 %}down{% else %}right{% endif %}"></i>
-                            {{ "%.2f"|format(stock.price_change) }}%
-                        </span>
+            </div>
+        </div>
+
+        {% if error %}
+        <!-- 錯誤訊息 -->
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-warning shadow-sm">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">查詢失敗</h5>
+                            <p class="mb-0">{{ error }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% elif stock_info %}
+        <!-- 股票資訊展示 -->
+        
+        <!-- 股票標題 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-primary">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h1 class="mb-2">
+                                    <span class="badge bg-primary me-2">{{ stock_code }}</span>
+                                    {{ stock_info.get('股票名稱', '未知股票') }}
+                                </h1>
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    資料時間：{{ stock_info.get('資料時間', '未知') }}
+                                    {% if stock_info.get('來源') %}
+                                    <span class="ms-3">
+                                        <i class="bi bi-database me-1"></i>
+                                        來源：{{ stock_info['來源'] }}
+                                    </span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="d-flex gap-2 justify-content-md-end">
+                                    <button class="btn btn-outline-primary btn-sm" 
+                                            onclick="refreshStock()">
+                                        <i class="bi bi-arrow-clockwise me-1"></i>重新整理
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm" 
+                                            onclick="shareStock()">
+                                        <i class="bi bi-share me-1"></i>分享
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要價格資訊 -->
+        <div class="row mb-4">
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">收盤價</h6>
+                        <h2 class="card-title text-primary mb-0">
+                            {{ stock_info.get('收盤價', 'N/A') | format_price }}
+                        </h2>
+                        {% if stock_info.get('幣別') %}
+                        <small class="text-muted">{{ stock_info['幣別'] }}</small>
                         {% endif %}
                     </div>
-                    <div class="price-update">
-                        <i class="fas fa-clock"></i> 最後更新：{{ now.strftime('%Y-%m-%d %H:%M:%S') }}
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">漲跌價差</h6>
+                        <h3 class="card-title mb-0 {{ stock_info.get('漲跌價差', '') | change_class }}">
+                            {{ stock_info.get('漲跌價差', 'N/A') }}
+                        </h3>
                     </div>
                 </div>
             </div>
-
-            <!-- 主要資訊區塊 -->
-            <div class="info-cards">
-                <div class="info-card trading">
-                    <div class="card-header">
-                        <i class="fas fa-chart-bar"></i>
-                        <h3>今日交易資訊</h3>
-                    </div>
-                    <div class="card-content">
-                        <table class="info-table">
-                            <tr>
-                                <th><i class="fas fa-door-open"></i> 開盤價</th>
-                                <td>{{ stock.open }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-arrow-up"></i> 最高價</th>
-                                <td>{{ stock.high_today }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-arrow-down"></i> 最低價</th>
-                                <td>{{ stock.low_today }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-history"></i> 昨收價</th>
-                                <td>{{ stock.previous_close }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-exchange-alt"></i> 成交量</th>
-                                <td>{{ "{:,}".format(stock.volume) if stock.volume != 'N/A' else 'N/A' }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="info-card technical">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>技術指標</h3>
-                    </div>
-                    <div class="card-content">
-                        <table class="info-table">
-                            <tr>
-                                <th><i class="fas fa-chart-area"></i> 5日均線</th>
-                                <td>{{ "%.2f"|format(stock.ma5) if stock.ma5 else 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-chart-area"></i> 20日均線</th>
-                                <td>{{ "%.2f"|format(stock.ma20) if stock.ma20 else 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-chart-area"></i> 60日均線</th>
-                                <td>{{ "%.2f"|format(stock.ma60) if stock.ma60 else 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-arrow-up"></i> 52週最高</th>
-                                <td>{{ stock.fifty_two_week_high }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-arrow-down"></i> 52週最低</th>
-                                <td>{{ stock.fifty_two_week_low }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="info-card fundamental">
-                    <div class="card-header">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                        <h3>基本面資訊</h3>
-                    </div>
-                    <div class="card-content">
-                        <table class="info-table">
-                            <tr>
-                                <th><i class="fas fa-chart-pie"></i> 本益比</th>
-                                <td>{{ "%.2f"|format(stock.pe_ratio) if stock.pe_ratio != 'N/A' else 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-dollar-sign"></i> 每股盈餘</th>
-                                <td>{{ "%.2f"|format(stock.eps) if stock.eps != 'N/A' else 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-percentage"></i> 殖利率</th>
-                                <td>{% if stock.dividend_yield != 'N/A' and stock.dividend_yield %}{{ "%.2f"|format(stock.dividend_yield * 100) }}%{% else %}N/A{% endif %}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-coins"></i> 市值</th>
-                                <td>{{ "{:,.0f}".format(stock.market_cap) if stock.market_cap != 'N/A' else 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <th><i class="fas fa-chart-bar"></i> 平均成交量</th>
-                                <td>{{ "{:,}".format(stock.avg_volume) if stock.avg_volume != 'N/A' else 'N/A' }}</td>
-                            </tr>
-                        </table>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">漲跌幅</h6>
+                        <h3 class="card-title mb-0 {{ stock_info.get('漲跌幅', '') | change_class }}">
+                            {{ stock_info.get('漲跌幅', 'N/A') }}
+                        </h3>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 圖表區域 -->
-            <div class="chart-section">
-                <div class="chart-card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>股價走勢</h3>
+        <!-- 詳細資訊 -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up me-2"></i>交易資訊
+                        </h5>
                     </div>
-                    {% if stock.price_chart_url %}
-                    <div class="chart-container">
-                        <img src="{{ stock.price_chart_url }}" alt="股價走勢圖" class="chart-img">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            {% set trading_items = [
+                                ('開盤價', stock_info.get('開盤價')),
+                                ('最高價', stock_info.get('最高價')),
+                                ('最低價', stock_info.get('最低價')),
+                                ('成交股數', stock_info.get('成交股數')),
+                                ('成交筆數', stock_info.get('成交筆數')),
+                                ('成交金額', stock_info.get('成交金額'))
+                            ] %}
+                            {% for label, value in trading_items %}
+                            {% if value and value != 'N/A' %}
+                            <div class="col-sm-6">
+                                <div class="border rounded p-2">
+                                    <small class="text-muted d-block">{{ label }}</small>
+                                    <strong>
+                                        {% if '股數' in label or '金額' in label %}
+                                            {{ value | format_number }}
+                                        {% elif '價' in label %}
+                                            {{ value | format_price }}
+                                        {% else %}
+                                            {{ value }}
+                                        {% endif %}
+                                    </strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
-                    {% endif %}
                 </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle me-2"></i>基本資料
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            {% set basic_items = [
+                                ('股票代號', stock_code),
+                                ('股票名稱', stock_info.get('股票名稱')),
+                                ('產業別', stock_info.get('產業別')),
+                                ('市場別', stock_info.get('市場別')),
+                                ('證券代號', stock_info.get('證券代號')),
+                                ('ISIN Code', stock_info.get('國際證券辨識號碼'))
+                            ] %}
+                            {% for label, value in basic_items %}
+                            {% if value and value != 'N/A' %}
+                            <div class="col-12">
+                                <div class="border rounded p-2">
+                                    <small class="text-muted d-block">{{ label }}</small>
+                                    <strong>{{ value }}</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="chart-card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-bar"></i>
-                        <h3>成交量分析</h3>
+        <!-- 額外資訊 (如果有的話) -->
+        {% if stock_info.get('本益比') or stock_info.get('股價淨值比') or stock_info.get('殖利率') %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calculator me-2"></i>財務指標
+                        </h5>
                     </div>
-                    {% if stock.volume_chart_url %}
-                    <div class="chart-container">
-                        <img src="{{ stock.volume_chart_url }}" alt="成交量圖" class="chart-img">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            {% if stock_info.get('本益比') %}
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 border rounded">
+                                    <h6 class="text-muted mb-1">本益比 (P/E)</h6>
+                                    <h4 class="mb-0 text-primary">{{ stock_info['本益比'] }}</h4>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if stock_info.get('股價淨值比') %}
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 border rounded">
+                                    <h6 class="text-muted mb-1">股價淨值比 (P/B)</h6>
+                                    <h4 class="mb-0 text-primary">{{ stock_info['股價淨值比'] }}</h4>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if stock_info.get('殖利率') %}
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 border rounded">
+                                    <h6 class="text-muted mb-1">殖利率</h6>
+                                    <h4 class="mb-0 text-primary">{{ stock_info['殖利率'] }}</h4>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
         {% endif %}
-        
-        <!-- 返回首頁按鈕 -->
-        <div class="action-buttons">
-            <a href="/" class="btn-primary">
-                <i class="fas fa-home"></i>
-                返回首頁
-            </a>
+
+        <!-- API 資料展示 -->
+        {% else %}
+        <!-- 初始狀態 -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="py-5">
+                    <i class="bi bi-search display-1 text-muted"></i>
+                    <h3 class="mt-3 text-muted">請輸入股票代碼開始查詢</h3>
+                    <p class="text-muted">支援台股股票、ETF等金融商品</p>
+                </div>
+            </div>
         </div>
+        {% endif %}
     </div>
 
-    <footer class="site-footer">
-        <div class="footer-content">
-            <p>© 2025 智慧股市分析平台 - 專業的投資決策夥伴</p>
-            <div class="footer-links">
-                <a href="#"><i class="fas fa-book"></i> 使用教學</a>
-                <a href="#"><i class="fas fa-question-circle"></i> 常見問題</a>
-                <a href="#"><i class="fas fa-envelope"></i> 聯絡我們</a>
+    <!-- 頁尾 -->
+    <footer class="bg-primary text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>台股財經網站</h6>
+                    <p class="small mb-0">提供即時台股資訊查詢服務</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="small mb-0">
+                        <i class="bi bi-shield-check me-1"></i>
+                        資料來源：Yahoo Finance API
+                    </p>
+                    {% if current_time %}
+                    <p class="small mb-0">最後更新：{{ current_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script>
+        // 搜尋表單增強
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('input[name="code"]');
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    // 移除非數字字符
+                    this.value = this.value.replace(/[^\d]/g, '');
+                });
+            }
+        });
+        
+        // 重新整理股票資料
+        function refreshStock() {
+            const stockCode = '{{ stock_code }}';
+            if (stockCode) {
+                // 在新分頁開啟，確保獲取最新資料
+                window.location.href = `{{ url_for('stock_page') }}?code=${stockCode}&refresh=${Date.now()}`;
+            }
+        }
+        
+        // 分享股票
+        function shareStock() {
+            const stockCode = '{{ stock_code }}';
+            const stockName = '{{ stock_info.get("股票名稱", "") if stock_info else "" }}';
+            const url = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `${stockCode} ${stockName} - 台股財經`,
+                    text: `查看 ${stockCode} ${stockName} 的即時股價資訊`,
+                    url: url
+                });
+            } else {
+                // 復製連結到剪貼簿
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('連結已複製到剪貼簿！');
+                });
+            }
+        }
+    </script>
 </body>
 </html>
