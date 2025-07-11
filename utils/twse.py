@@ -57,6 +57,7 @@ def get_stock_from_yahoo(stock_code):
             stock_info = {
                 '股票代碼': stock_code,
                 '股票名稱': get_stock_name(stock_code),
+                '即時股價': f"{current_price:.2f}" if current_price else "N/A",
                 '收盤價': f"{current_price:.2f}" if current_price else "N/A",
                 '開盤價': f"{open_price:.2f}" if open_price else "N/A",
                 '最高價': f"{high_price:.2f}" if high_price else "N/A",
@@ -74,26 +75,49 @@ def get_stock_from_yahoo(stock_code):
                 stock_info['漲跌價差'] = "N/A"
                 stock_info['漲跌幅'] = "N/A"
             
-            # 嘗試獲取更多資料
+            # 嘗試從 meta 資料中獲取更完整的資訊
+            try:
+                # 從 meta 中獲取開盤價
+                if meta.get('regularMarketOpen'):
+                    stock_info['開盤價'] = f"{meta['regularMarketOpen']:.2f}"
+                
+                # 如果 meta 中有昨收和當前價格，重新計算漲跌
+                prev_close_meta = meta.get('regularMarketPreviousClose') or meta.get('previousClose') or meta.get('chartPreviousClose')
+                current_price_meta = meta.get('regularMarketPrice')
+                
+                if prev_close_meta and current_price_meta and prev_close_meta > 0:
+                    change = current_price_meta - prev_close_meta
+                    change_percent = (change / prev_close_meta) * 100
+                    
+                    stock_info['漲跌價差'] = f"{change:+.2f}"
+                    stock_info['漲跌幅'] = f"{change_percent:+.2f}%"
+                    print(f"💹 計算漲跌: 目前價格={current_price_meta}, 昨收={prev_close_meta}, 漲跌={change:+.2f}")
+                    
+            except Exception as e:
+                print(f"⚠️ 處理 meta 資料失敗: {e}")
+            
+            # 嘗試獲取更多資料（備用方案）
             try:
                 # 從 quote 資料中獲取
                 quote_url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={yahoo_symbol}"
-                quote_resp = requests.get(quote_url, timeout=CONFIG['timeout'], headers=HEADERS)
-                quote_data = quote_resp.json()
+                quote_resp = requests.get(quote_url, timeout=5, headers=HEADERS)
                 
-                if quote_data.get('quoteResponse') and quote_data['quoteResponse'].get('result'):
-                    quote_result = quote_data['quoteResponse']['result'][0]
+                if quote_resp.status_code == 200:
+                    quote_data = quote_resp.json()
                     
-                    # 更新開盤價等資料
-                    if quote_result.get('regularMarketOpen'):
-                        stock_info['開盤價'] = f"{quote_result['regularMarketOpen']:.2f}"
-                    if quote_result.get('regularMarketChange'):
-                        stock_info['漲跌價差'] = f"{quote_result['regularMarketChange']:+.2f}"
-                    if quote_result.get('regularMarketChangePercent'):
-                        stock_info['漲跌幅'] = f"{quote_result['regularMarketChangePercent']:+.2f}%"
+                    if quote_data.get('quoteResponse') and quote_data['quoteResponse'].get('result'):
+                        quote_result = quote_data['quoteResponse']['result'][0]
+                        
+                        # 更新開盤價等資料
+                        if quote_result.get('regularMarketOpen') and stock_info.get('開盤價') == "N/A":
+                            stock_info['開盤價'] = f"{quote_result['regularMarketOpen']:.2f}"
+                        if quote_result.get('regularMarketChange') and stock_info.get('漲跌價差') == "N/A":
+                            stock_info['漲跌價差'] = f"{quote_result['regularMarketChange']:+.2f}"
+                        if quote_result.get('regularMarketChangePercent') and stock_info.get('漲跌幅') == "N/A":
+                            stock_info['漲跌幅'] = f"{quote_result['regularMarketChangePercent']:+.2f}%"
                         
             except Exception as e:
-                print(f"⚠️ 獲取詳細資料失敗: {e}")
+                print(f"⚠️ 獲取 Quote 資料失敗: {e}")
             
             print(f"✅ Yahoo Finance 成功獲取 {stock_code} 資料")
             return stock_info
@@ -236,7 +260,8 @@ def get_stock_from_twse_realtime(stock_code):
             stock_info = {
                 '股票代碼': stock_code,
                 '股票名稱': name if name else get_stock_name(stock_code),
-                '收盤價': current_price if current_price != '0' else "N/A",
+                '即時股價': current_price if current_price != '0' else "N/A",
+                '收盤價': current_price if current_price != '0' else "N/A",  # 即時股價也是收盤價
                 '開盤價': open_price if open_price != '0' else "N/A",
                 '最高價': high_price if high_price != '0' else "N/A",
                 '最低價': low_price if low_price != '0' else "N/A",
@@ -373,10 +398,19 @@ def get_stock_basic_info(stock_code):
             stock_data = get_data_func()
             
             if stock_data and not stock_data.get('錯誤'):
-                # 儲存快取
-                save_cache(cache_key, stock_data)
-                print(f"✅ 成功從 {source_name} 獲取資料並快取")
-                return stock_data
+                # 檢查是否有有效的股價資料
+                realtime_price = stock_data.get('即時股價', 'N/A')
+                close_price = stock_data.get('收盤價', 'N/A')
+                
+                # 如果股價資料有效（不是 "-", "N/A", "0" 或空值）
+                if (realtime_price not in ['-', 'N/A', '0', '', None] or 
+                    close_price not in ['-', 'N/A', '0', '', None]):
+                    # 儲存快取
+                    save_cache(cache_key, stock_data)
+                    print(f"✅ 成功從 {source_name} 獲取資料並快取")
+                    return stock_data
+                else:
+                    print(f"⚠️ {source_name} 回傳資料但股價無效: 即時股價={realtime_price}, 收盤價={close_price}")
             else:
                 print(f"❌ {source_name} 資料不完整或有錯誤")
                 
@@ -394,123 +428,74 @@ def get_stock_basic_info(stock_code):
     return error_result
 
 
+def get_stock_name_from_api(stock_code):
+    """從 API 動態獲取股票名稱"""
+    try:
+        # 嘗試從證交所即時報價 API 獲取名稱
+        url = f"https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_{stock_code}.tw"
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Referer': 'https://mis.twse.com.tw/',
+            'Accept': 'application/json'
+        }
+        
+        resp = requests.get(url, timeout=5, headers=headers)
+        if resp.status_code == 200:
+            data = resp.json()
+            if data.get('msgArray') and len(data['msgArray']) > 0:
+                stock_data = data['msgArray'][0]
+                name = stock_data.get('n', '').strip()
+                if name:
+                    return name
+        
+        # 嘗試從 Yahoo Finance 獲取名稱
+        yahoo_symbol = f"{stock_code}.TW"
+        yahoo_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_symbol}"
+        
+        resp = requests.get(yahoo_url, timeout=5, headers=HEADERS)
+        if resp.status_code == 200:
+            data = resp.json()
+            if data.get('chart') and data['chart'].get('result'):
+                result = data['chart']['result'][0]
+                meta = result.get('meta', {})
+                
+                # 嘗試不同的名稱欄位
+                name = (meta.get('longName') or 
+                       meta.get('shortName') or 
+                       meta.get('displayName'))
+                
+                if name:
+                    # 清理名稱，移除多餘字符
+                    name = name.replace('Taiwan Semiconductor Manufacturing Company Limited', '台積電')
+                    name = name.replace('TAIWAN SEMICONDUCTOR MANUFACTUR', '台積電')
+                    return name
+        
+    except Exception as e:
+        print(f"⚠️ 無法從 API 獲取股票名稱 {stock_code}: {e}")
+    
+    return None
+
+
 def get_stock_name(stock_code):
-    """取得股票名稱"""
-    # 擴展股票名稱字典，支援更多股票
-    stock_names = {
-        # 主要股票
+    """取得股票名稱 - 先嘗試 API，失敗則使用預設名稱"""
+    # 先嘗試從 API 動態獲取
+    api_name = get_stock_name_from_api(stock_code)
+    if api_name:
+        return api_name
+    
+    # 備用：常見股票的預設名稱（只保留最常見的）
+    common_stocks = {
         '2330': '台積電',
-        '2317': '鴻海',
+        '2317': '鴻海', 
         '2454': '聯發科',
-        '2412': '中華電',
-        '1301': '台塑',
-        '2882': '國泰金',
-        '2881': '富邦金',
-        '2603': '長榮',
-        '3008': '大立光',
-        '2308': '台達電',
-        
-        # 金融股
-        '2886': '兆豐金',
-        '2891': '中信金',
-        '2892': '第一金',
-        '2884': '玉山金',
-        '5880': '合庫金',
-        
-        # 傳產股
-        '1216': '統一',
-        '2002': '中鋼',
-        '6505': '台塑化',
-        '1303': '南亞',
-        '2207': '和泰車',
-        
-        # ETF - 原有的
         '0050': '元大台灣50',
         '0056': '元大高股息',
+        '006208': '富邦台50',
         '00878': '國泰永續高股息',
         '00919': '群益台灣精選高息',
-        '00900': '富邦特選高股息30',
-        '00713': '元大台灣高息低波',
-        '006208': '富邦台50',
-        
-        # 新增更多 6 位數 ETF
-        '00692': '富邦公司治理',
-        '00701': '國泰股利精選30',
-        '00712': '復華富時不動產',
-        '00714': '群益道瓊美國地產',
-        '00715': '街口布蘭特油',
-        '00730': '富邦臺灣優質高息',
-        '00731': '復華標普500',
-        '00733': '富邦臺灣中小',
-        '00734': '中信中國高股息',
-        '00735': '國泰納斯達克100',
-        '00736': '國泰美國費城半導體',
-        '00737': '國泰美國道瓊',
-        '00738': '元大美債20年',
-        '00739': '元大美債7-10年',
-        '00740': '富邦美國政府債券',
-        '00741': '富邦美國政府債券20年',
-        '00742': '富邦美國公債7-10年',
-        '00743': '富邦美國公債1-3年',
-        '00744': '群益美國中期公債',
-        '00745': '群益全球不動產',
-        '00746': '富邦美國政府債券2-5年',
-        '00748': '復華滬深300',
-        '00749': '富邦香港',
-        '00750': '群益A50',
-        '00751': '元大台灣ESG永續',
-        '00752': '中信中國50',
-        '00753': '群益美國科技',
-        '00754': '群益標普非必需消費',
-        '00755': '群益標普科技',
-        '00756': '群益標普工業',
-        '00757': '統一FANG+',
-        '00758': '群益標普500',
-        '00759': '群益全球關鍵生技',
-        '00760': '群益全球戰略收益',
-        '00761': '群益美國科技龍頭',
-        '00762': '群益5G通信',
-        '00763': '群益台灣半導體',
-        '00764': '群益台灣電動車',
-        '00765': '群益台灣新創',
-        '00766': '群益台灣高科技50',
-        '00767': '群益美國科技巨頭',
-        '00768': '群益全球數位基建',
-        '00769': '群益雲端科技',
-        '00770': '群益全球戰略股息',
-        '00771': '群益美國高息',
-        '00772': '群益6個月台幣定存',
-        '00773': '群益6個月美元定存',
-        '00774': '群益6個月人民幣定存',
-        '00775': '群益全球優質股息',
-        '00776': '群益美國科技',
-        '00777': '群益全球半導體',
-        '00778': '群益台股ESG低碳50',
-        '00779': '群益台灣永續',
-        '00780': '國泰台灣5G+',
-        '00781': '國泰台灣低波30',
-        '00782': '國泰智能車',
-        '00783': '國泰美國科技100',
-        '00784': '國泰美國費城半導體正2',
-        '00785': '國泰台灣5G+反1',
-        '00786': '國泰豐益債券',
-        '00787': '國泰美國科技反1',
-        '00788': '國泰美國費城半導體反1',
-        '00789': '國泰美國道瓊反1',
-        
-        # 科技股
-        '2303': '聯電',
-        '3711': '日月光投控',
-        '2379': '瑞昱',
-        '2408': '南亞科',
-        '3034': '聯詠',
-        '6446': '藥華藥',
-        '3231': '緯創',
-        '2327': '國巨',
-        '6415': '矽力-KY',
-        '3443': '創意',
     }
-    return stock_names.get(stock_code, f'{stock_code}')
+    
+    return common_stocks.get(stock_code, stock_code)
 
 
 def get_market_summary():
