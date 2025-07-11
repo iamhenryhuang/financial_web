@@ -1,0 +1,29 @@
+# Flask 核心框架
+Flask==3.0.0
+
+# Flask 擴展
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+
+# 表單處理
+WTForms==3.1.1
+email-validator==2.1.0
+
+# 資料庫
+SQLAlchemy==2.0.23
+
+# HTTP 請求
+requests==2.31.0
+
+# 資料處理
+pandas==2.1.4
+
+# 密碼安全
+Werkzeug==3.0.1
+
+# 時間處理
+python-dateutil==2.8.2
+
+# 部署相關
+gunicorn==21.2.0
