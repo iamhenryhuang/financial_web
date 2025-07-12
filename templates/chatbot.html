@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能助手 - 台股資訊</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- 自定義樣式 -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* 玻璃質感導航欄 */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-light);
+        }
+
+        .navbar-brand, .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transform: translateY(-2px);
+        }
+
+        /* 主容器 */
+        .main-container {
+            padding: 2rem 0;
+        }
+
+        /* 標題區域 */
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .title-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .title-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        /* 聊天容器 */
+        .chat-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: var(--shadow-heavy);
+            overflow: hidden;
+            height: 600px;
+            animation: fadeInUp 1s ease-out 0.4s both;
+            transition: all 0.3s ease;
+        }
+
+        .chat-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 聊天標題 */
+        .chat-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .chat-header h5 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-header small {
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 聊天訊息區域 */
+        .chat-messages {
+            height: calc(100% - 180px);
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+            position: relative;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        /* 訊息樣式 */
+        .message {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            animation: messageSlideIn 0.5s ease-out;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .message-content:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .message.user .message-content {
+            background: var(--primary-gradient);
+            color: white;
+            margin-left: 1rem;
+            border-bottom-right-radius: 8px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: var(--text-primary);
+            margin-right: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom-left-radius: 8px;
+        }
+
+        /* 頭像 */
+        .message-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .message-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .message.user .message-avatar {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .message.bot .message-avatar {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        /* 時間戳 */
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            opacity: 0.7;
+        }
+
+        /* 歡迎訊息 */
+        .welcome-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .welcome-message .robot-icon {
+            font-size: 4rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        .welcome-message p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        /* 輸入中指示器 */
+        .typing-indicator {
+            display: none;
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            background: rgba(108, 117, 125, 0.1);
+            border-radius: 15px;
+            margin: 0 1rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        .typing-dots {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            animation: typing 1.4s infinite;
+            margin: 0 2px;
+        }
+
+        .typing-dots:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* 輸入區域 */
+        .chat-input {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .form-control {
+            border-radius: 25px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* 快速問題按鈕 */
+        .quick-questions {
+            margin-top: 2rem;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .quick-questions h6 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .quick-question-btn {
+            margin: 0.5rem;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .quick-question-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            color: white;
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .title-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .chat-container {
+                height: 500px;
+                margin: 0 1rem;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        /* 頁尾 */
+        footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        footer h6, footer p {
+            color: white;
+        }
+
+        footer .opacity-75 {
+            opacity: 0.8 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="bi bi-graph-up me-2"></i>台股資訊
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">首頁</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('chatbot_page') }}">智能助手</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">會員中心</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('watchlist') }}">自選股</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">個人資料</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('change_password') }}">修改密碼</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">登出</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">登入</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">註冊</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <div class="container main-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+                <!-- 標題區域 -->
+                <div class="title-section">
+                    <h1>
+                        <i class="bi bi-robot me-3"></i>股票助手
+                    </h1>
+                    <p>
+                        與我對話，輕鬆獲取台股資訊<br>
+                        <small>「台積電今天收盤多少？」「大盤怎麼樣？」</small>
+                    </p>
+                </div>
+
+                <!-- 聊天容器 -->
+                <div class="chat-container">
+                    <!-- 聊天標題 -->
+                    <div class="chat-header">
+                        <h5>
+                            <i class="bi bi-chat-dots me-2"></i>智能股票助手
+                        </h5>
+                        <small>即時股票資訊查詢 • 自然語言對話</small>
+                    </div>
+
+                    <!-- 聊天訊息區域 -->
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="welcome-message">
+                            <div class="robot-icon">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                            <p><strong>您好！我是您的專屬股票助手</strong></p>
+                            <p>我可以幫您查詢台股資訊，只需要用自然語言提問即可</p>
+                            <p class="mb-0">
+                                <small>試試看：「台積電今天收盤多少？」或「大盤怎麼樣？」</small>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 輸入中指示器 -->
+                    <div class="typing-indicator" id="typingIndicator">
+                        <i class="bi bi-robot me-2"></i>
+                        助手正在思考中
+                        <span class="typing-dots"></span>
+                        <span class="typing-dots"></span>
+                        <span class="typing-dots"></span>
+                    </div>
+
+                    <!-- 輸入區域 -->
+                    <div class="chat-input">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="messageInput" 
+                                   placeholder="請輸入您的問題，例如：台積電今天收盤多少？" autocomplete="off">
+                            <button class="btn btn-primary" type="button" id="sendButton">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速問題按鈕 -->
+                <div class="quick-questions text-center">
+                    <h6>💡 快速問題</h6>
+                    <button class="btn quick-question-btn" 
+                            onclick="sendQuickQuestion('台積電今天收盤多少？')">
+                        <i class="bi bi-cpu me-1"></i>台積電股價
+                    </button>
+                    <button class="btn quick-question-btn" 
+                            onclick="sendQuickQuestion('大盤怎麼樣？')">
+                        <i class="bi bi-bar-chart me-1"></i>大盤資訊
+                    </button>
+                    <button class="btn quick-question-btn" 
+                            onclick="sendQuickQuestion('鴻海漲跌幅如何？')">
+                        <i class="bi bi-trending-up me-1"></i>鴻海漲跌
+                    </button>
+                    <button class="btn quick-question-btn" 
+                            onclick="sendQuickQuestion('0050成交量多少？')">
+                        <i class="bi bi-graph-up me-1"></i>ETF成交量
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h6 class="mb-2">
+                        <i class="bi bi-robot me-2"></i>台股智能助手
+                    </h6>
+                    <p class="small mb-0 opacity-75">AI 驅動的股票查詢服務</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="small mb-1">
+                        <i class="bi bi-database me-1"></i>
+                        資料來源：Yahoo Finance、證交所
+                    </p>
+                    <p class="small mb-0 opacity-75">
+                        <i class="bi bi-shield-check me-1"></i>
+                        即時更新 • 準確可靠
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 聊天機器人 JavaScript -->
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // 發送訊息
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // 清除歡迎訊息
+            const welcomeMessage = chatMessages.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.style.opacity = '0';
+                setTimeout(() => welcomeMessage.remove(), 300);
+            }
+
+            // 顯示用戶訊息
+            addMessage(message, 'user');
+            
+            // 清空輸入框
+            messageInput.value = '';
+            
+            // 顯示輸入中指示器
+            showTypingIndicator();
+            
+            // 發送到後端
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideTypingIndicator();
+                if (data.success) {
+                    setTimeout(() => {
+                        addMessage(data.data.bot_response, 'bot', data.data.timestamp);
+                    }, 500);
+                } else {
+                    addMessage('抱歉，我遇到了一些問題：' + data.error, 'bot');
+                }
+            })
+            .catch(error => {
+                hideTypingIndicator();
+                addMessage('抱歉，連線發生問題，請稍後再試。', 'bot');
+                console.error('Error:', error);
+            });
+        }
+
+        // 添加訊息到聊天窗口
+        function addMessage(content, sender, timestamp = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(20px)';
+            
+            const currentTime = timestamp || new Date().toLocaleTimeString('zh-TW', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const avatar = sender === 'user' 
+                ? '<i class="bi bi-person-fill"></i>' 
+                : '<i class="bi bi-robot"></i>';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div>
+                    <div class="message-content">${content}</div>
+                    <div class="message-time">${currentTime}</div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            
+            // 動畫效果
+            setTimeout(() => {
+                messageDiv.style.opacity = '1';
+                messageDiv.style.transform = 'translateY(0)';
+                messageDiv.style.transition = 'all 0.5s ease-out';
+            }, 100);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 顯示輸入中指示器
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'block';
+            typingIndicator.style.opacity = '0';
+            setTimeout(() => {
+                typingIndicator.style.opacity = '1';
+                typingIndicator.style.transition = 'opacity 0.3s ease';
+            }, 100);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 隱藏輸入中指示器
+        function hideTypingIndicator() {
+            typingIndicator.style.opacity = '0';
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+            }, 300);
+        }
+
+        // 快速問題
+        function sendQuickQuestion(question) {
+            messageInput.value = question;
+            sendMessage();
+        }
+
+        // 事件監聽器
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 自動聚焦輸入框
+        messageInput.focus();
+
+        // 添加輸入框焦點效果
+        messageInput.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.02)';
+            this.parentElement.style.transition = 'transform 0.3s ease';
+        });
+
+        messageInput.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+    </script>
+</body>
+</html> 
