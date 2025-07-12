@@ -12,7 +12,7 @@
     <!-- 自定義樣式 -->
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
     
     <!-- 導航列 -->
     <nav class="navbar navbar-expand-lg">
@@ -20,21 +20,32 @@
             <a class="navbar-brand" href="{{ url_for('home') }}">
                 <i class="bi bi-graph-up me-2"></i>台股資訊
             </a>
-            <div class="navbar-nav ms-auto">
-                <a href="{{ url_for('home') }}" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-house me-1"></i>返回首頁
-                </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{{ url_for('chatbot_page') }}">
+                        <i class="bi bi-robot me-1"></i>智能助手
+                    </a>
+                    <a href="{{ url_for('home') }}" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-house me-1"></i>返回首頁
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="container my-5">
+    <div class="container my-5 page-content">
         <div class="row justify-content-center">
             <div class="col-lg-6 col-md-8">
-                <div class="card shadow">
+                <div class="card hover-lift animate-delay-1">
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
-                            <h2 class="fw-bold text-primary">會員註冊</h2>
+                            <div class="mb-3">
+                                <i class="bi bi-person-plus-fill fs-1 text-primary" style="animation: pulse 2s infinite;"></i>
+                            </div>
+                            <h2 class="fw-bold text-white">會員註冊</h2>
                             <p class="text-muted">創建您的帳戶，解鎖更多專業功能</p>
                         </div>
 
@@ -56,7 +67,7 @@
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    {{ form.username.label(class="form-label fw-semibold") }}
+                                    {{ form.username.label(class="form-label fw-semibold text-white") }}
                                     {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else "")) }}
                                     {% if form.username.errors %}
                                     <div class="invalid-feedback">
@@ -66,7 +77,7 @@
                                 </div>
                                 
                                 <div class="col-md-6 mb-3">
-                                    {{ form.email.label(class="form-label fw-semibold") }}
+                                    {{ form.email.label(class="form-label fw-semibold text-white") }}
                                     {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
                                     {% if form.email.errors %}
                                     <div class="invalid-feedback">
@@ -78,19 +89,19 @@
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    {{ form.full_name.label(class="form-label fw-semibold") }}
+                                    {{ form.full_name.label(class="form-label fw-semibold text-white") }}
                                     {{ form.full_name(class="form-control", placeholder="選填") }}
                                 </div>
                                 
                                 <div class="col-md-6 mb-3">
-                                    {{ form.phone.label(class="form-label fw-semibold") }}
+                                    {{ form.phone.label(class="form-label fw-semibold text-white") }}
                                     {{ form.phone(class="form-control", placeholder="選填") }}
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    {{ form.password.label(class="form-label fw-semibold") }}
+                                    {{ form.password.label(class="form-label fw-semibold text-white") }}
                                     {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
                                     {% if form.password.errors %}
                                     <div class="invalid-feedback">
@@ -100,7 +111,7 @@
                                 </div>
                                 
                                 <div class="col-md-6 mb-4">
-                                    {{ form.password2.label(class="form-label fw-semibold") }}
+                                    {{ form.password2.label(class="form-label fw-semibold text-white") }}
                                     {{ form.password2(class="form-control" + (" is-invalid" if form.password2.errors else "")) }}
                                     {% if form.password2.errors %}
                                     <div class="invalid-feedback">
@@ -116,7 +127,7 @@
                         <div class="text-center">
                             <p class="text-muted mb-0">
                                 已有帳戶？
-                                <a href="{{ url_for('login') }}" class="text-primary text-decoration-none fw-semibold">
+                                <a href="{{ url_for('login') }}" class="text-white text-decoration-none fw-semibold">
                                     立即登入
                                 </a>
                             </p>
@@ -125,39 +136,50 @@
                 </div>
 
                 <!-- 會員等級說明 -->
-                <div class="card mt-4">
+                <div class="card mt-4 hover-lift animate-delay-2">
                     <div class="card-body">
-                        <h6 class="card-title text-center mb-4">會員等級比較</h6>
+                        <h6 class="card-title text-center mb-4 text-white">
+                            <i class="bi bi-award-fill text-warning me-2"></i>會員等級比較
+                        </h6>
                         <div class="row g-4 text-center">
                             <div class="col-md-4">
-                                <div class="p-3 border rounded">
-                                    <h6 class="text-muted mb-2">免費會員</h6>
-                                    <ul class="list-unstyled small text-muted">
-                                        <li><i class="bi bi-check text-success me-1"></i>基礎查詢</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>10支自選股</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>7天歷史</li>
+                                <div class="glass-effect p-3 rounded hover-lift">
+                                    <div class="mb-3">
+                                        <i class="bi bi-person-badge fs-2 text-muted"></i>
+                                    </div>
+                                    <h6 class="text-white mb-3">免費會員</h6>
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">基礎查詢</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">10支自選股</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">7天歷史</span></li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="p-3 border border-primary rounded">
-                                    <h6 class="text-primary mb-2">付費會員</h6>
-                                    <ul class="list-unstyled small text-muted">
-                                        <li><i class="bi bi-check text-success me-1"></i>進階分析</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>100支自選股</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>價格提醒</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>資料匯出</li>
+                                <div class="glass-effect p-3 rounded hover-lift" style="border: 2px solid var(--primary-color);">
+                                    <div class="mb-3">
+                                        <i class="bi bi-person-badge-fill fs-2 text-primary"></i>
+                                    </div>
+                                    <h6 class="text-primary mb-3">付費會員</h6>
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">進階分析</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">100支自選股</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">價格提醒</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">資料匯出</span></li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="p-3 border border-warning rounded">
-                                    <h6 class="text-warning mb-2">VIP 會員</h6>
-                                    <ul class="list-unstyled small text-muted">
-                                        <li><i class="bi bi-check text-success me-1"></i>API 存取</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>無限自選股</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>客製指標</li>
-                                        <li><i class="bi bi-check text-success me-1"></i>優先客服</li>
+                                <div class="glass-effect p-3 rounded hover-lift" style="border: 2px solid var(--warning-color);">
+                                    <div class="mb-3">
+                                        <i class="bi bi-award-fill fs-2 text-warning" style="animation: bounce 2s infinite;"></i>
+                                    </div>
+                                    <h6 class="text-warning mb-3">VIP 會員</h6>
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">API 存取</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">無限自選股</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">客製指標</span></li>
+                                        <li class="mb-2"><i class="bi bi-check text-success me-1"></i><span class="text-muted">優先客服</span></li>
                                     </ul>
                                 </div>
                             </div>
@@ -170,5 +192,67 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加滾動動畫效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 觀察所有需要動畫的元素
+            document.querySelectorAll('.animate-delay-1, .animate-delay-2').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
+            });
+
+            // 表單增強
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    const submitBtn = this.querySelector('input[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.value = '註冊中...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+
+            // 密碼強度檢查
+            const passwordInput = document.querySelector('input[name="password"]');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    const strengthBar = document.querySelector('.password-strength');
+                    
+                    // 可以添加密碼強度指示器
+                    let strength = 0;
+                    if (password.length >= 8) strength++;
+                    if (/[A-Z]/.test(password)) strength++;
+                    if (/[a-z]/.test(password)) strength++;
+                    if (/[0-9]/.test(password)) strength++;
+                    if (/[^A-Za-z0-9]/.test(password)) strength++;
+                    
+                    // 根據強度改變邊框顏色
+                    this.style.borderColor = strength < 2 ? 'var(--danger-color)' : 
+                                           strength < 4 ? 'var(--warning-color)' : 
+                                           'var(--success-color)';
+                });
+            }
+        });
+    </script>
 </body>
 </html> 
