@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify, url_for, redirect, f
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, AnonymousUserMixin
 from datetime import datetime
 from utils.twse import get_stock_basic_info, get_market_summary, get_stock_name
+from utils.chatbot import process_chat_message
+
 from models import db, User, Watchlist, SearchHistory, PriceAlert
 from forms import LoginForm, RegisterForm, ProfileForm, ChangePasswordForm, WatchlistForm, PriceAlertForm
 import os
@@ -342,6 +344,55 @@ def remove_from_watchlist(item_id):
     return redirect(url_for('watchlist'))
 
 
+# === 聊天機器人功能 ===
+
+@app.route('/chatbot')
+def chatbot_page():
+    """聊天機器人頁面"""
+    return render_template('chatbot.html', current_time=datetime.now())
+
+
+@app.route('/api/chat', methods=['POST'])
+def api_chat():
+    """API: 聊天機器人對話"""
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({
+                'success': False,
+                'error': '請提供訊息內容',
+                'timestamp': datetime.now().isoformat()
+            }), 400
+        
+        user_message = data['message'].strip()
+        if not user_message:
+            return jsonify({
+                'success': False,
+                'error': '訊息不能為空',
+                'timestamp': datetime.now().isoformat()
+            }), 400
+        
+        # 處理聊天訊息
+        bot_response = process_chat_message(user_message)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'user_message': user_message,
+                'bot_response': bot_response,
+                'timestamp': datetime.now().strftime('%H:%M:%S')
+            },
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
+
 # === API 端點 ===
 
 @app.route('/api/stock/<stock_code>')
@@ -428,6 +479,7 @@ def api_popular():
         }), 500
 
 
+
 # === 錯誤處理 ===
 
 @app.errorhandler(404)
@@ -504,4 +556,6 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"❌ 資料庫初始化錯誤: {e}")
     
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    #app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run()
+    
