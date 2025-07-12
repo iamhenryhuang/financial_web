@@ -20,63 +20,71 @@
             <a class="navbar-brand" href="{{ url_for('home') }}">
                 <i class="bi bi-graph-up me-2"></i>台股資訊
             </a>
-            <div class="navbar-nav ms-auto">
-                {% if current_user.is_authenticated %}
-                <div class="dropdown me-3">
-                    <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
-                        {% if current_user.is_vip() %}
-                        <span class="badge bg-warning text-dark ms-1">VIP</span>
-                        {% elif current_user.is_premium() %}
-                        <span class="badge bg-primary ms-1">會員</span>
-                        {% endif %}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{{ url_for('chatbot_page') }}">
+                        <i class="bi bi-robot me-1"></i>智能助手
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
-                            <i class="bi bi-speedometer2 me-2"></i>控制台
-                        </a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('watchlist') }}">
-                            <i class="bi bi-bookmark-star me-2"></i>自選股
-                        </a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('profile') }}">
-                            <i class="bi bi-person me-2"></i>個人資料
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">
-                            <i class="bi bi-box-arrow-right me-2"></i>登出
-                        </a></li>
-                    </ul>
+                    {% if current_user.is_authenticated %}
+                    <div class="dropdown me-3">
+                        <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
+                            {% if current_user.is_vip() %}
+                            <span class="badge bg-warning text-dark ms-1">VIP</span>
+                            {% elif current_user.is_premium() %}
+                            <span class="badge bg-primary ms-1">會員</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>控制台
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('watchlist') }}">
+                                <i class="bi bi-bookmark-star me-2"></i>自選股
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">
+                                <i class="bi bi-person me-2"></i>個人資料
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right me-2"></i>登出
+                            </a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <div class="me-3">
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>登入
+                        </a>
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-sm">
+                            <i class="bi bi-person-plus me-1"></i>註冊
+                        </a>
+                    </div>
+                    {% endif %}
+                    <span class="navbar-text">
+                        <i class="bi bi-clock me-1"></i>
+                        {{ current_time.strftime('%Y-%m-%d %H:%M') }}
+                    </span>
                 </div>
-                {% else %}
-                <div class="me-3">
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">
-                        <i class="bi bi-box-arrow-in-right me-1"></i>登入
-                    </a>
-                    <a href="{{ url_for('register') }}" class="btn btn-light btn-sm">
-                        <i class="bi bi-person-plus me-1"></i>註冊
-                    </a>
-                </div>
-                {% endif %}
-                <span class="navbar-text">
-                    <i class="bi bi-clock me-1"></i>
-                    {{ current_time.strftime('%Y-%m-%d %H:%M') }}
-                </span>
             </div>
         </div>
     </nav>
 
-    <div class="container my-5">
+    <div class="container my-5 page-content">
         
         <!-- 主標題區域 -->
-        <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold text-dark mb-3">專業股價查詢平台</h1>
-            <p class="lead text-muted">即時掌握台股動態，精準投資決策</p>
+        <div class="text-center mb-5 animate-delay-1">
+            <h1 class="display-5 fw-bold mb-3">專業股價查詢平台</h1>
+            <p class="lead">即時掌握台股動態，精準投資決策</p>
         </div>
 
         <!-- 搜尋區域 -->
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8">
-                <div class="search-container">
+                <div class="search-container animate-delay-2">
                     <form action="{{ url_for('stock_page') }}" method="GET">
                         <div class="input-group input-group-lg">
                             <input type="text" 
@@ -100,7 +108,7 @@
         </div>
 
         <!-- 大盤資訊 -->
-        <div class="market-overview mb-5">
+        <div class="market-overview mb-5 animate-delay-3">
             <h3 class="market-title">
                 <i class="bi bi-bar-chart-line"></i>大盤概況
             </h3>
@@ -108,12 +116,12 @@
             <div class="row g-4">
                 {% for key, value in market_info.items() %}
                 <div class="col-md-4">
-                    <div class="stats-card">
+                    <div class="stats-card hover-lift">
                         <div class="stats-label">{{ key }}</div>
                         <div class="stats-value 
                             {% if key == '漲跌' and value and value.startswith('-') %}text-danger
                             {% elif key == '漲跌' and value and value.startswith('+') %}text-success
-                            {% else %}text-dark{% endif %}">
+                            {% else %}text-white{% endif %}">
                             {{ value if value else 'N/A' }}
                         </div>
                     </div>
@@ -122,8 +130,8 @@
             </div>
             {% else %}
             <div class="text-center py-4">
-                <i class="bi bi-exclamation-triangle text-warning fs-1"></i>
-                <p class="text-muted mt-3">
+                <i class="bi bi-exclamation-triangle text-warning fs-1 mb-3"></i>
+                <p class="text-muted">
                     {{ market_info.get('錯誤', '無法載入大盤資訊') }}
                 </p>
             </div>
@@ -131,20 +139,31 @@
         </div>
 
         <!-- 熱門標的 -->
-        <div class="mb-5">
-            <h3 class="mb-4">
+        <div class="mb-5 animate-delay-4">
+            <h3 class="mb-4 text-white">
                 <i class="bi bi-star me-2"></i>熱門標的
             </h3>
             <div class="row g-3">
                 {% for stock in popular_stocks %}
                 <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="card h-100">
+                    <div class="card h-100 hover-lift" style="background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.3);">
                         <div class="card-body text-center">
-                            <h6 class="card-title fw-bold text-primary mb-1 monospace">{{ stock.code }}</h6>
-                            <p class="card-text text-muted small mb-3">{{ stock.name }}</p>
+                            <h6 class="card-title fw-bold mb-1 monospace" style="color: #ffffff; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">{{ stock.code }}</h6>
+                            <p class="card-text small mb-3" style="color: #f0f0f0; font-weight: 500;">{{ stock.name }}</p>
                             <a href="{{ url_for('stock_page', code=stock.code) }}" 
-                               class="btn btn-outline-primary btn-sm w-100">
-                                查看詳情
+                               class="btn btn-sm w-100" 
+                               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                      color: #ffffff; 
+                                      border: none; 
+                                      font-weight: 600; 
+                                      padding: 10px 16px; 
+                                      border-radius: 8px; 
+                                      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                                      transition: all 0.3s ease;
+                                      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);"
+                               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.4)'"
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.3)'">
+                                <i class="bi bi-eye me-1"></i>查看詳情
                             </a>
                         </div>
                     </div>
@@ -153,32 +172,50 @@
             </div>
         </div>
 
+        <!-- 股票助手推薦 -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card bg-gradient-primary text-white hover-lift animate-delay-5">
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-robot fs-1 mb-3" style="animation: bounce 2s infinite;"></i>
+                        <h4 class="card-title mb-3">🤖 股票助手</h4>
+                        <p class="card-text mb-4">
+                            試試我們的智能助手！只要問「台積電今天收盤多少？」就能快速獲得答案
+                        </p>
+                        <a href="{{ url_for('chatbot_page') }}" class="btn btn-light btn-lg">
+                            <i class="bi bi-chat-dots me-2"></i>開始對話
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 功能特色 -->
         <div class="row g-4 mb-5">
             <div class="col-md-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-lift animate-delay-1">
                     <div class="card-body">
                         <i class="bi bi-lightning-fill text-warning fs-1 mb-3"></i>
                         <h5 class="card-title">即時資料</h5>
-                        <p class="card-text text-muted">即時更新股價資訊，掌握最新市場動態</p>
+                        <p class="card-text">即時更新股價資訊，掌握最新市場動態</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-lift animate-delay-2">
                     <div class="card-body">
-                        <i class="bi bi-graph-up-arrow text-success fs-1 mb-3"></i>
-                        <h5 class="card-title">完整分析</h5>
-                        <p class="card-text text-muted">提供開高低收、成交量等完整交易資訊</p>
+                        <i class="bi bi-robot text-info fs-1 mb-3"></i>
+                        <h5 class="card-title">智能助手</h5>
+                        <p class="card-text">自然語言查詢，輕鬆獲取股票資訊</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-lift animate-delay-3">
                     <div class="card-body">
                         <i class="bi bi-shield-check text-primary fs-1 mb-3"></i>
                         <h5 class="card-title">資料可靠</h5>
-                        <p class="card-text text-muted">多重資料來源確保資訊準確性</p>
+                        <p class="card-text">多重資料來源確保資訊準確性</p>
                     </div>
                 </div>
             </div>
@@ -234,6 +271,29 @@
                 const submitBtn = this.querySelector('button[type="submit"]');
                 submitBtn.innerHTML = '<span class="loading"></span> 查詢中...';
                 submitBtn.disabled = true;
+            });
+
+            // 添加滾動動畫效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 觀察所有需要動畫的元素
+            document.querySelectorAll('.animate-delay-1, .animate-delay-2, .animate-delay-3, .animate-delay-4, .animate-delay-5').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
             });
         });
     </script>
